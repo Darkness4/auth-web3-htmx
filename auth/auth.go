@@ -27,10 +27,6 @@ const (
 	tokenCookieKey = "session_token"
 )
 
-var (
-	ErrAuthError = errors.New("authentication error")
-)
-
 type claimsContextKey struct{}
 
 // Auth is a service that provides HTTP handlers and middlewares used for authentication.
@@ -42,6 +38,7 @@ type Auth struct {
 	pub       *ecdsa.PublicKey
 }
 
+// NewAuth builds the Auth struct.
 func NewAuth(jwtSecret jwt.Secret, pk *ecdsa.PrivateKey) *Auth {
 	return &Auth{
 		JWTSecret: jwtSecret,
@@ -108,7 +105,7 @@ func (a *Auth) Verify(address string, data []byte, sig []byte) error {
 			Str("sig", hexutil.Encode(sig)).
 			Str("expected hash", hexutil.Encode(hash)).
 			Msg("addresses are not equal")
-		return ErrAuthError
+		return errors.New("authentication error: addresses are not equal")
 	}
 
 	// Verify message
@@ -118,7 +115,7 @@ func (a *Auth) Verify(address string, data []byte, sig []byte) error {
 		log.Err(err).
 			Str("data", string(data)).
 			Msg("invalid msg")
-		return ErrAuthError
+		return fmt.Errorf("authentication error: invalid msg: %w", err)
 	}
 	r, err := hex.DecodeString(msg.ServerSigR)
 	if err != nil {
@@ -139,20 +136,21 @@ func (a *Auth) Verify(address string, data []byte, sig []byte) error {
 		log.Error().
 			Str("data", string(data)).
 			Msg("nonce failed sig verification")
-		return ErrAuthError
+		return errors.New("authentication error: nonce failed sig verification")
 	}
 	// Time-window 30s
 	if !(msg.Nonce-now < 30 && msg.Nonce-now > -30) {
 		log.Error().
 			Str("data", string(data)).
 			Msg("nonce expired")
-		return ErrAuthError
+		return errors.New("authentication error: nonce expired")
 	}
 
 	return nil
 }
 
-type AuthResponse struct {
+// ethResponse is the expected response from the authenticator.
+type ethResponse struct {
 	Address string `json:"address"`
 	Data    []byte `json:"data"`
 	Sig     []byte `json:"sig"`
@@ -176,7 +174,7 @@ func (a *Auth) Login() http.HandlerFunc {
 //  3. Store the JWT token in a cookie for the browser.
 func (a *Auth) CallBack() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var rep AuthResponse
+		var rep ethResponse
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Err(err).Msg("failed to read body")
