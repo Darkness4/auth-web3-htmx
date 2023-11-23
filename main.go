@@ -38,9 +38,6 @@ var (
 	jwtSecret  string
 	privateKey *ecdsa.PrivateKey
 
-	configPath string
-	publicURL  string
-
 	dbFile string
 )
 
@@ -81,21 +78,6 @@ var app = &cli.App{
 				return nil
 			},
 			EnvVars: []string{"PRIVATE_KEY"},
-		},
-		&cli.StringFlag{
-			Name:        "config.path",
-			Usage:       "Path of the configuration file.",
-			Destination: &configPath,
-			Value:       "./config.yaml",
-			Aliases:     []string{"c"},
-			EnvVars:     []string{"CONFIG_PATH"},
-		},
-		&cli.StringFlag{
-			Name:        "public-url",
-			Usage:       "An URL pointing to the server.",
-			Destination: &publicURL,
-			Value:       "http://localhost:3000",
-			EnvVars:     []string{"PUBLIC_URL"},
 		},
 		&cli.StringFlag{
 			Name:        "db.path",

@@ -48,13 +48,12 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --csrf.secret value            A 32 bytes hex secret [$CSRF_SECRET]
-   --jwt.secret value             A unique string secret [$JWT_SECRET]
-   --config.path value, -c value  Path of the configuration file. (default: "./config.yaml") [$CONFIG_PATH]
-   --public-url value             An URL pointing to the server. (default: "http://localhost:3000") [$PUBLIC_URL]
-   --db.path value                SQLite3 database file path. (default: "./db.sqlite3") [$DB_PATH]
-   --help, -h                     show help
-   --version, -v                  print the version
+   --csrf.secret value  A 32 bytes hex secret [$CSRF_SECRET]
+   --jwt.secret value   A unique string secret [$JWT_SECRET]
+   --private-key value  A ecdsa private key in Hex. [$PRIVATE_KEY]
+   --db.path value      SQLite3 database file path. (default: "./db.sqlite3") [$DB_PATH]
+   --help, -h           show help
+   --version, -v        print the version
 ```
 
 ## Application Flow
