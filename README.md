@@ -18,9 +18,9 @@ For the hype.
 
    ```shell
    ## .env.local
-   ## A 32 bytes hex secret ()
+   ## A 32 bytes hex secret (openssl rand -hex 32)
    CSRF_SECRET=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-   ## A hex ECDSA private key in ethereum format (32 bytes)
+   ## A hex ECDSA private key in ethereum format (openssl rand -hex 32)
    PRIVATE_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
    ## A unique string secret
    JWT_SECRET=secret
