@@ -68,9 +68,12 @@ func (a *Auth) Challenge(message string) string {
 	dat, err := json.Marshal(challengeMessage{
 		Message:    message,
 		Nonce:      now,
-		ServerSigR: r.Text(16),
-		ServerSigS: s.Text(16),
+		ServerSigR: hex.EncodeToString(r.Bytes()),
+		ServerSigS: hex.EncodeToString(s.Bytes()),
 	})
+	if err != nil {
+		panic(err)
+	}
 	return string(dat)
 }
 
@@ -119,10 +122,16 @@ func (a *Auth) Verify(address string, data []byte, sig []byte) error {
 	}
 	r, err := hex.DecodeString(msg.ServerSigR)
 	if err != nil {
+		log.Err(err).
+			Str("data", string(data)).
+			Msg("failed to decode r")
 		return err
 	}
 	s, err := hex.DecodeString(msg.ServerSigS)
 	if err != nil {
+		log.Err(err).
+			Str("data", string(data)).
+			Msg("failed to decode s")
 		return err
 	}
 	nonceS := strconv.FormatInt(msg.Nonce, 10)
@@ -208,6 +217,7 @@ func (a *Auth) CallBack() http.HandlerFunc {
 			Name:     tokenCookieKey,
 			Value:    token,
 			Expires:  time.Now().Add(jwt.ExpiresDuration),
+			Path:     "/",
 			HttpOnly: true,
 		}
 		http.SetCookie(w, cookie)
@@ -224,6 +234,8 @@ func (a *Auth) Logout() http.HandlerFunc {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
+		cookie.Value = ""
+		cookie.Path = "/"
 		cookie.Expires = time.Now().Add(-1 * time.Hour)
 		http.SetCookie(w, cookie)
 		http.Redirect(w, r, "/", http.StatusSeeOther)

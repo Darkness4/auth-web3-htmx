@@ -7,9 +7,9 @@ VERSION_CORE_DEV = $(shell echo $(TAG_NAME_DEV))
 GIT_COMMIT = $(shell git rev-parse --short=7 HEAD)
 VERSION = $(or $(and $(TAG_NAME),$(VERSION_CORE)),$(and $(TAG_NAME_DEV),$(VERSION_CORE_DEV)-dev),$(GIT_COMMIT))
 
-gow := $(shell which gow)
-ifeq ($(gow),)
-gow := $(shell go env GOPATH)/bin/gow
+wgo :=  $(shell which wgo)
+ifeq ($(wgo),)
+wgo := $(shell go env GOPATH)/bin/wgo
 endif
 
 golint := $(shell which golangci-lint)
@@ -27,17 +27,17 @@ ifeq ($(sqlc),)
 sqlc := $(shell go env GOPATH)/bin/sqlc
 endif
 
-.PHONY: bin/auth-htmx
-bin/auth-htmx: $(GO_SRCS)
-	go build -ldflags "-s -w -X main.version=${VERSION}" -o "$@" ./main.go
+.PHONY: bin/auth-web3-htmx
+bin/auth-web3-htmx: $(GO_SRCS)
+	go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o "$@" ./main.go
 
 .PHONY: run
-run:
-	go run ./main.go
+run: bin/auth-web3-htmx
+	@bin/auth-web3-htmx
 
 .PHONY: watch
-watch: $(gow)
-	$(gow) -e=go,mod,html,tmpl,env,local run ./main.go
+watch: $(wgo)
+	$(wgo) -xdir "gen/" -xdir "bin/" sh -c 'make run || exit 1' --signal SIGTERM
 
 .PHONY: lint
 lint: $(golint)
@@ -66,8 +66,8 @@ drop: $(migrate)
 $(migrate):
 	go install -tags 'sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate
 
-$(gow):
-	go install github.com/mitranim/gow@latest
+$(wgo):
+	go install github.com/bokwoon95/wgo@latest
 
 $(golint):
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest

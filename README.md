@@ -4,7 +4,7 @@ A very simple example HTMX with Web3 with:
 
 - Go HTML templating engine.
 - HTMX solution for SSR.
-- Web3 as authenticator.
+- Ethereum as authenticator.
 - (+CSRF protection measures for all requests).
 - SQLite3 with sqlc and golang-migrate.
 
@@ -32,17 +32,17 @@ For the hype.
 2. Run the binary:
 
    ```shell
-   ./auth-htmx
+   ./auth-web3-htmx
    ```
 
 **Help**:
 
 ```
 NAME:
-   auth-htmx - Demo of Auth and HTMX.
+   auth-web3-htmx - Demo of Auth and HTMX.
 
 USAGE:
-   auth-htmx [global options] command [command options] [arguments...]
+   auth-web3-htmx [global options] command [command options] [arguments...]
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
@@ -63,7 +63,3 @@ GLOBAL OPTIONS:
   - Show login button if not logged in.
   - Else, show a welcome with routing.
 - A protected counter page.
-
-The login process follows the standard OAuth2 process, which is fully documented on [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps).
-
-Fetching identity is through OIDC or GitHub API.

@@ -13,7 +13,7 @@ COPY . /build/
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
   --mount=type=cache,target=/go/pkg \
-  CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -ldflags "-s -w -X main.version=${VERSION}" -o /out/auth-htmx ./main.go
+  CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -ldflags "-s -w -X main.version=${VERSION}" -o /out/auth-web3-htmx ./main.go
 
 # ---
 FROM registry-1.docker.io/library/busybox:1.36.1
@@ -28,7 +28,7 @@ RUN mkdir /app
 RUN addgroup -S app && adduser -S -G app app
 WORKDIR /app
 
-COPY --from=builder /out/auth-htmx .
+COPY --from=builder /out/auth-web3-htmx .
 COPY --from=certs /etc/ssl/certs /etc/ssl/certs
 
 RUN chown -R app:app .
@@ -36,4 +36,4 @@ USER app
 
 EXPOSE 3000
 
-ENTRYPOINT ["/tini", "--", "/app/auth-htmx"]
+ENTRYPOINT ["/tini", "--", "/app/auth-web3-htmx"]

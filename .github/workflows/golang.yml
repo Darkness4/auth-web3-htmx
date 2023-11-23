@@ -88,7 +88,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: false
-          tags: ghcr.io/darkness4/auth-htmx:latest
+          tags: ghcr.io/darkness4/auth-web3-htmx:latest
           build-args: |
             VERSION=dev
           cache-from: type=gha
@@ -118,9 +118,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/darkness4/auth-htmx:latest
-            ghcr.io/darkness4/auth-htmx:dev
-            ghcr.io/darkness4/auth-htmx:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/darkness4/auth-web3-htmx:latest
+            ghcr.io/darkness4/auth-web3-htmx:dev
+            ghcr.io/darkness4/auth-web3-htmx:${{ steps.get_version.outputs.VERSION }}
           build-args: |
             ${{ steps.get_version.outputs.VERSION }}
           cache-from: type=gha

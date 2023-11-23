@@ -1,5 +1,5 @@
 /*
-Auth HTMX is a simple demonstration of OAuth2/OIDC in combination with HTMX, written in Go.
+Auth Web3 HTMX is a simple demonstration of Web3 in combination with HTMX, written in Go.
 */
 package main
 
@@ -45,7 +45,7 @@ var (
 )
 
 var app = &cli.App{
-	Name:    "auth-htmx",
+	Name:    "auth-web3-htmx",
 	Version: version,
 	Usage:   "Demo of Auth and HTMX.",
 	Flags: []cli.Flag{
@@ -202,6 +202,7 @@ var app = &cli.App{
 }
 
 func main() {
+	log.Logger = log.With().Caller().Logger()
 	_ = godotenv.Load(".env.local")
 	_ = godotenv.Load(".env")
 	if err := app.Run(os.Args); err != nil {
