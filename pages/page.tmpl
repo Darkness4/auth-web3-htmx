@@ -1,0 +1,33 @@
+{{define "head"}}
+<title>Home - Auth HTMX</title>
+{{ end }}
+
+{{define "body"}}
+<header>
+  {{ template "Nav" . }}
+</header>
+
+<main>
+  {{if not .UserID }}
+  {{ template "AuthCard" . }}
+  {{ else }}
+  <article>
+    <header>
+      <div>This is the home page.</div>
+    </header>
+
+    <main>
+      <h3>Hello {{ .UserName }}!</h3>
+    </main>
+
+    <footer>
+      <nav hx-boost="true">
+        <ul>
+          <li><a href="/counter">Go To Counter</a></li>
+        </ul>
+      </nav>
+    </footer>
+  </article>
+  {{ end }}
+</main>
+{{ end }}

@@ -1,0 +1,4 @@
+bin/
+
+**/*.local
+db.sqlite3
