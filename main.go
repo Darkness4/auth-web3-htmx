@@ -66,9 +66,8 @@ var app = &cli.App{
 			EnvVars:     []string{"JWT_SECRET"},
 		},
 		&cli.StringFlag{
-			Name:        "private-key",
-			Usage:       "A ecdsa private key in Hex.",
-			Destination: &jwtSecret,
+			Name:  "private-key",
+			Usage: "A ecdsa private key in Hex.",
 			Action: func(ctx *cli.Context, s string) error {
 				pk, err := crypto.HexToECDSA(s)
 				if err != nil {
