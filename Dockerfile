@@ -3,7 +3,7 @@ FROM --platform=$BUILDPLATFORM registry-1.docker.io/library/alpine:latest as cer
 RUN apk update && apk add --no-cache ca-certificates
 
 # ---
-FROM --platform=$BUILDPLATFORM registry-1.docker.io/library/golang:1.21.4 as builder
+FROM --platform=$BUILDPLATFORM registry-1.docker.io/library/golang:1.24.2 as builder
 WORKDIR /build/
 COPY go.mod go.sum ./
 RUN go mod download
@@ -16,24 +16,17 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
   CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -ldflags "-s -w -X main.version=${VERSION}" -o /out/auth-web3-htmx ./main.go
 
 # ---
-FROM registry-1.docker.io/library/busybox:1.36.1
+FROM registry-1.docker.io/library/busybox:1.37.0
 
 ARG TARGETOS TARGETARCH
 
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$TARGETARCH /tini
-RUN chmod +x /tini
-
-RUN mkdir /app
-RUN addgroup -S app && adduser -S -G app app
 WORKDIR /app
 
 COPY --from=builder /out/auth-web3-htmx .
 COPY --from=certs /etc/ssl/certs /etc/ssl/certs
 
-RUN chown -R app:app .
-USER app
+USER 1000:1000
 
 EXPOSE 3000
 
-ENTRYPOINT ["/tini", "--", "/app/auth-web3-htmx"]
+ENTRYPOINT ["/app/auth-web3-htmx"]

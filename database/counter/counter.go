@@ -11,7 +11,7 @@ import (
 
 // Repository defines the counter methods.
 type Repository interface {
-	Inc(ctx context.Context, userID string) (new int64, err error)
+	Inc(ctx context.Context, userID string) (int64, error)
 	Get(ctx context.Context, userID string) (int64, error)
 }
 
@@ -28,19 +28,19 @@ type repository struct {
 
 // Inc increments the counter of a user in the database by one.
 func (r *repository) Inc(ctx context.Context, userID string) (newValue int64, err error) {
-	newValue, err = r.Queries.IncrementCounter(ctx, userID)
+	newValue, err = r.IncrementCounter(ctx, userID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return newValue, err
 	}
 	if errors.Is(err, sql.ErrNoRows) {
-		return 1, r.Queries.CreateCounter(ctx, userID)
+		return 1, r.CreateCounter(ctx, userID)
 	}
 	return newValue, err
 }
 
 // Get the value of the counter of a user from the database.
 func (r *repository) Get(ctx context.Context, userID string) (int64, error) {
-	counter, err := r.Queries.GetCounter(ctx, userID)
+	counter, err := r.GetCounter(ctx, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, nil

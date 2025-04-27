@@ -139,7 +139,7 @@ func (a *Auth) Verify(address string, data []byte, sig []byte) error {
 		return errors.New("authentication error: nonce failed sig verification")
 	}
 	// Time-window 30s
-	if !(msg.Nonce-now < 30 && msg.Nonce-now > -30) {
+	if msg.Nonce-now >= 30 || msg.Nonce-now <= -30 {
 		log.Error().
 			Str("data", string(data)).
 			Msg("nonce expired")
@@ -160,7 +160,7 @@ type ethResponse struct {
 //
 // It sends a challenge to the authenticator (Metamask).
 func (a *Auth) Login() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprint(w, a.Challenge("login"))
 	}
 }

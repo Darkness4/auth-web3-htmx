@@ -4,11 +4,13 @@ Auth Web3 HTMX is a simple demonstration of Web3 in combination with HTMX, writt
 package main
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"database/sql"
 	"encoding/hex"
 	"fmt"
 	"html/template"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -49,7 +51,7 @@ var app = &cli.App{
 		&cli.StringFlag{
 			Name:  "csrf.secret",
 			Usage: "A 32 bytes hex secret",
-			Action: func(ctx *cli.Context, s string) error {
+			Action: func(_ *cli.Context, s string) error {
 				data, err := hex.DecodeString(s)
 				if err != nil {
 					panic(err)
@@ -68,7 +70,7 @@ var app = &cli.App{
 		&cli.StringFlag{
 			Name:  "private-key",
 			Usage: "A ecdsa private key in Hex.",
-			Action: func(ctx *cli.Context, s string) error {
+			Action: func(_ *cli.Context, s string) error {
 				pk, err := crypto.HexToECDSA(s)
 				if err != nil {
 					return err
@@ -178,7 +180,14 @@ var app = &cli.App{
 		r.Get("/*", renderFn)
 
 		log.Info().Msg("listening")
-		return http.ListenAndServe(":3000", csrf.Protect(key)(r))
+		srv := http.Server{
+			Addr:    ":3000",
+			Handler: csrf.Protect(key)(r),
+			BaseContext: func(_ net.Listener) context.Context {
+				return cCtx.Context
+			},
+		}
+		return srv.ListenAndServe()
 	},
 }
 
